@@ -3,7 +3,8 @@ use crate::history::{TranslationEntry, TranslationHistory};
 use crate::translate::TranslationService;
 use crate::validate;
 use std::sync::Mutex;
-use tauri::State;
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
+use tauri::{Manager, State};
 
 pub struct AppState {
     pub config: Mutex<Config>,
@@ -70,4 +71,20 @@ pub fn dismiss_popup_entry(state: State<AppState>, id: u64) -> usize {
 pub fn clear_popup_session(state: State<AppState>) {
     let mut session = state.popup_session.lock().unwrap();
     *session = Vec::new();
+}
+
+#[tauri::command]
+pub fn show_context_menu(window: tauri::Window) -> Result<(), String> {
+    let app = window.app_handle();
+    let settings = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)
+        .map_err(|e| e.to_string())?;
+    let separator = PredefinedMenuItem::separator(app)
+        .map_err(|e| e.to_string())?;
+    let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)
+        .map_err(|e| e.to_string())?;
+
+    let menu = Menu::with_items(app, &[&settings, &separator, &quit])
+        .map_err(|e| e.to_string())?;
+
+    window.popup_menu(&menu).map_err(|e| e.to_string())
 }

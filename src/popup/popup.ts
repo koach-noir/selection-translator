@@ -6,6 +6,7 @@ import {
   getPopupEntries,
   dismissPopupEntry,
   clearPopupSession,
+  showContextMenu,
 } from "../shared/tauri-bridge";
 import type { TranslationEntry, CopyMode } from "../shared/types";
 
@@ -251,7 +252,7 @@ async function adjustWindowLayout(): Promise<void> {
   await appWindow.setPosition(new LogicalPosition(x, y));
 }
 
-// ─── Keyboard ───
+// ─── Keyboard & Context Menu ───
 
 function setupKeyboardClose(): void {
   document.addEventListener("keydown", async (e) => {
@@ -260,6 +261,13 @@ function setupKeyboardClose(): void {
       await clearPopupSession();
       await getCurrentWindow().hide();
     }
+  });
+}
+
+function setupContextMenu(): void {
+  document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    showContextMenu();
   });
 }
 
@@ -278,6 +286,7 @@ async function init(): Promise<void> {
   });
 
   setupKeyboardClose();
+  setupContextMenu();
   await adjustWindowLayout();
 }
 

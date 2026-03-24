@@ -34,3 +34,7 @@ export async function dismissPopupEntry(id: number): Promise<number> {
 export async function clearPopupSession(): Promise<void> {
   return invoke("clear_popup_session");
 }
+
+export async function showContextMenu(): Promise<void> {
+  return invoke("show_context_menu");
+}
