@@ -153,7 +153,7 @@ fn ensure_popup_visible(app: &tauri::AppHandle) -> Result<(), String> {
 
     // macOS WKWebView は visible(false) / 極小サイズだとコンテンツを読み込まない
     // 通常サイズで作成し、JS が即座にサイズ・位置を調整する
-    WebviewWindowBuilder::new(app, "popup", WebviewUrl::App("/popup/index.html".into()))
+    WebviewWindowBuilder::new(app, "popup", WebviewUrl::App("/src/popup/index.html".into()))
         .title("")
         .inner_size(400.0, 300.0)
         .position(100.0, 100.0)

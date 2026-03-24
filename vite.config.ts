@@ -1,27 +1,9 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig } from "vite";
 
 const host = process.env.TAURI_DEV_HOST;
 
-// devサーバーで /popup/ → /src/popup/ にリライト
-function multiPageRewrite(): Plugin {
-  return {
-    name: "multi-page-rewrite",
-    configureServer(server) {
-      server.middlewares.use((req, _res, next) => {
-        if (req.url?.startsWith("/popup/")) {
-          req.url = "/src" + req.url;
-        } else if (req.url?.startsWith("/settings/")) {
-          req.url = "/src" + req.url;
-        }
-        next();
-      });
-    },
-  };
-}
-
 export default defineConfig({
   clearScreen: false,
-  plugins: [multiPageRewrite()],
   server: {
     port: 1420,
     strictPort: true,

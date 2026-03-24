@@ -16,7 +16,7 @@
       {
         "label": "settings",
         "title": "Settings",
-        "url": "/settings/index.html",
+        "url": "/src/settings/index.html",
         "width": 480,
         "height": 600,
         "resizable": false,
