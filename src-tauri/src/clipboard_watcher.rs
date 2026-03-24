@@ -23,17 +23,10 @@ pub fn start(app: AppHandle, running: Arc<AtomicBool>) {
                 continue;
             }
 
-            let delta = count - last_count;
             last_count = count;
 
-            // ポーリング間隔内に2回以上変更 → ダブルコピーと判定
-            if delta >= 2 {
-                trigger_translate(&app);
-                last_change_time = None;
-                continue;
-            }
-
-            // 1回の変更 → 前回変更からの経過時間で判定
+            // 変更検出 — delta は無視しタイミングのみで判定
+            // (Windows では1回のコピーで sequence number が複数回増えるため)
             let now = Instant::now();
             if let Some(prev) = last_change_time {
                 if now.duration_since(prev) < DOUBLE_COPY_THRESHOLD {
