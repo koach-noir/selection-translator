@@ -20,8 +20,12 @@ function populateForm(config: Config): void {
   getInput("englishOnly").checked = config.englishOnly;
 }
 
+// 現在のconfigを保持し、フォームにない項目を保全する
+let currentConfig: Config | null = null;
+
 function readForm(): Config {
   return {
+    ...(currentConfig ?? ({} as Config)),
     enabled: true,
     opacity: parseFloat(getInput("opacity").value),
     fontSize: parseInt(getInput("fontSize").value, 10),
@@ -46,6 +50,7 @@ function showStatus(message: string): void {
 
 async function init(): Promise<void> {
   const config = await getConfig();
+  currentConfig = config;
   populateForm(config);
 
   const opacityInput = getInput("opacity");

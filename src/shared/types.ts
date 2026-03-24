@@ -1,3 +1,5 @@
+export type CopyMode = "translated" | "original" | "both";
+
 export interface Config {
   enabled: boolean;
   opacity: number;
@@ -8,6 +10,7 @@ export interface Config {
   shadow: boolean;
   minLength: number;
   englishOnly: boolean;
+  copyMode: CopyMode;
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -20,6 +23,7 @@ export const DEFAULT_CONFIG: Config = {
   shadow: true,
   minLength: 4,
   englishOnly: true,
+  copyMode: "translated",
 };
 
 export interface TranslationEntry {

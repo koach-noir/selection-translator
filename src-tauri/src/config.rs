@@ -4,6 +4,20 @@ use std::path::PathBuf;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
+pub enum CopyMode {
+    Translated,
+    Original,
+    Both,
+}
+
+impl Default for CopyMode {
+    fn default() -> Self {
+        Self::Translated
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Config {
     pub enabled: bool,
     pub opacity: f64,
@@ -14,6 +28,8 @@ pub struct Config {
     pub shadow: bool,
     pub min_length: usize,
     pub english_only: bool,
+    #[serde(default)]
+    pub copy_mode: CopyMode,
 }
 
 impl Default for Config {
@@ -28,6 +44,7 @@ impl Default for Config {
             shadow: true,
             min_length: 4,
             english_only: true,
+            copy_mode: CopyMode::default(),
         }
     }
 }

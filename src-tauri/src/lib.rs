@@ -158,6 +158,7 @@ fn ensure_popup_visible(app: &tauri::AppHandle) -> Result<(), String> {
         .inner_size(400.0, 300.0)
         .position(100.0, 100.0)
         .decorations(false)
+        .transparent(true)
         .always_on_top(true)
         .skip_taskbar(true)
         .focused(true)
