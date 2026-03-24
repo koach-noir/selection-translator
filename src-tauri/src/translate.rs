@@ -68,9 +68,6 @@ impl TranslationService {
         }
     }
 
-    pub fn cache_size(&self) -> usize {
-        self.cache.len()
-    }
 }
 
 /// Google Translate APIのレスポンスから翻訳テキストを抽出
@@ -100,7 +97,7 @@ mod tests {
     #[test]
     fn test_new_service_has_empty_cache() {
         let service = TranslationService::new();
-        assert_eq!(service.cache_size(), 0);
+        assert_eq!(service.cache.len(), 0);
     }
 
     #[tokio::test]
@@ -112,7 +109,7 @@ mod tests {
 
         let result = service.translate("hello").await;
         assert_eq!(result.unwrap(), "こんにちは");
-        assert_eq!(service.cache_size(), 1);
+        assert_eq!(service.cache.len(), 1);
     }
 
     #[tokio::test]
