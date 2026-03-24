@@ -105,7 +105,7 @@ fn truncate_str(s: &str, max_chars: usize) -> String {
     }
 }
 
-fn handle_menu_event(app: &tauri::AppHandle, event: tauri::menu::MenuEvent) {
+pub(crate) fn handle_menu_event(app: &tauri::AppHandle, event: tauri::menu::MenuEvent) {
     let id = event.id.as_ref();
 
     if let Some(entry_id_str) = id.strip_prefix("history_") {

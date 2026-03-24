@@ -31,11 +31,22 @@ pub fn run() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .manage(app_state)
+        .on_window_event(|window, event| {
+            // Settings ウィンドウは閉じずに非表示にする（再利用のため）
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                if window.label() == "settings" {
+                    api.prevent_close();
+                    let _ = window.hide();
+                }
+            }
+        })
         .setup({
             let running = watcher_running.clone();
             move |app| {
                 tray::setup_tray(app)?;
                 clipboard_watcher::start(app.handle().clone(), running);
+                // コンテキストメニュー等のイベントをトレイと共通のハンドラで処理
+                app.on_menu_event(tray::handle_menu_event);
                 Ok(())
             }
         })
@@ -48,6 +59,7 @@ pub fn run() {
             commands::get_popup_entries,
             commands::dismiss_popup_entry,
             commands::clear_popup_session,
+            commands::show_context_menu,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");
