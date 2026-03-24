@@ -1,5 +1,11 @@
 export type CopyMode = "translated" | "original" | "both";
 
+export type PopupPosition =
+  | "rightQuarter"
+  | "rightHalf"
+  | "leftQuarter"
+  | "leftHalf";
+
 export interface Config {
   enabled: boolean;
   opacity: number;
@@ -11,6 +17,7 @@ export interface Config {
   minLength: number;
   englishOnly: boolean;
   copyMode: CopyMode;
+  popupPosition: PopupPosition;
 }
 
 export const DEFAULT_CONFIG: Config = {
@@ -24,6 +31,7 @@ export const DEFAULT_CONFIG: Config = {
   minLength: 4,
   englishOnly: true,
   copyMode: "translated",
+  popupPosition: "rightQuarter",
 };
 
 export interface TranslationEntry {

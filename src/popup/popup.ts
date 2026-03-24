@@ -8,7 +8,12 @@ import {
   clearPopupSession,
   showContextMenu,
 } from "../shared/tauri-bridge";
-import type { TranslationEntry, CopyMode } from "../shared/types";
+import type {
+  TranslationEntry,
+  CopyMode,
+  Config,
+  PopupPosition,
+} from "../shared/types";
 
 // ─── Icons (Lucide) ───
 
@@ -23,9 +28,33 @@ const ICON_CLOSE = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" 
 let currentEntries: readonly TranslationEntry[] = [];
 let hoveredId: number | null = null;
 let copyMode: CopyMode = "translated";
+let popupPosition: PopupPosition = "rightQuarter";
 
 const ENTRY_MAX_HEIGHT_RATIO = 0.2;
 const COPY_FEEDBACK_MS = 1200;
+
+// ─── Config → CSS ───
+
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function applyConfig(config: Config): void {
+  copyMode = config.copyMode;
+  popupPosition = config.popupPosition;
+  const s = document.documentElement.style;
+  s.setProperty("--font-size", `${config.fontSize}px`);
+  s.setProperty("--font-color", config.fontColor);
+  s.setProperty("--bg-color", hexToRgba(config.backgroundColor, config.opacity));
+  s.setProperty("--border-radius", `${config.borderRadius}px`);
+  s.setProperty(
+    "--card-shadow",
+    config.shadow ? "0 2px 20px rgba(0, 0, 0, 0.4)" : "none",
+  );
+}
 
 // ─── Highlight ───
 
@@ -225,11 +254,22 @@ function handleNewTranslation(entry: TranslationEntry): void {
 
 // ─── Layout ───
 
+function computeLayout(
+  position: PopupPosition,
+  screenWidth: number,
+): { windowWidth: number; x: number } {
+  const isHalf = position === "rightHalf" || position === "leftHalf";
+  const isLeft = position === "leftQuarter" || position === "leftHalf";
+  const windowWidth = Math.round(screenWidth / (isHalf ? 2 : 4));
+  const x = isLeft ? 0 : screenWidth - windowWidth;
+  return { windowWidth, x };
+}
+
 async function adjustWindowLayout(): Promise<void> {
   const appWindow = getCurrentWindow();
   const screenWidth = window.screen.width;
   const screenHeight = window.screen.height;
-  const windowWidth = Math.round(screenWidth / 4);
+  const { windowWidth, x } = computeLayout(popupPosition, screenWidth);
 
   await new Promise((r) => requestAnimationFrame(r));
 
@@ -246,7 +286,6 @@ async function adjustWindowLayout(): Promise<void> {
     ? lastCard.offsetTop + lastCard.offsetHeight / 2
     : contentHeight / 2;
 
-  const x = screenWidth - windowWidth;
   const y = Math.max(0, Math.round(screenHeight / 2 - lastCardCenter));
 
   await appWindow.setPosition(new LogicalPosition(x, y));
@@ -275,7 +314,7 @@ function setupContextMenu(): void {
 
 async function init(): Promise<void> {
   const config = await getConfig();
-  copyMode = config.copyMode;
+  applyConfig(config);
 
   const entries = await getPopupEntries();
   currentEntries = entries;
@@ -283,6 +322,12 @@ async function init(): Promise<void> {
 
   await listen<TranslationEntry>("translation-new", (event) => {
     handleNewTranslation(event.payload);
+  });
+
+  await listen<Config>("config-updated", (event) => {
+    applyConfig(event.payload);
+    renderAll();
+    adjustWindowLayout();
   });
 
   setupKeyboardClose();

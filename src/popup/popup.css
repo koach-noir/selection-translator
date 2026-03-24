@@ -29,11 +29,11 @@ body {
 /* ─── Card ─── */
 
 .entry-card {
-  background: rgba(22, 22, 28, 0.78);
+  background: var(--bg-color, rgba(22, 22, 28, 0.78));
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  border-radius: var(--border-radius, 12px);
   padding: 10px 14px;
   opacity: 0.55;
   transition:
@@ -45,7 +45,7 @@ body {
 .entry-card.highlighted {
   opacity: 1;
   border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--card-shadow, 0 2px 20px rgba(0, 0, 0, 0.4));
 }
 
 /* ─── Card header (action buttons) ─── */
@@ -93,10 +93,10 @@ body {
 }
 
 .card-translated {
-  font-size: 14px;
+  font-size: var(--font-size, 14px);
   font-weight: 500;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--font-color, rgba(255, 255, 255, 0.95));
 }
 
 .card-original {

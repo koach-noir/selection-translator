@@ -4,7 +4,7 @@ use crate::translate::TranslationService;
 use crate::validate;
 use std::sync::Mutex;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
-use tauri::{Manager, State};
+use tauri::{Emitter, Manager, State};
 
 pub struct AppState {
     pub config: Mutex<Config>,
@@ -20,9 +20,15 @@ pub fn get_config(state: State<AppState>) -> Config {
 }
 
 #[tauri::command]
-pub fn update_config(state: State<AppState>, config: Config) -> Result<(), String> {
+pub fn update_config(
+    app: tauri::AppHandle,
+    state: State<AppState>,
+    config: Config,
+) -> Result<(), String> {
     config::save_config(&config)?;
-    *state.config.lock().unwrap() = config;
+    *state.config.lock().unwrap() = config.clone();
+    // ポップアップに設定変更を通知
+    let _ = app.emit_to("popup", "config-updated", &config);
     Ok(())
 }
 
@@ -85,6 +91,13 @@ pub fn show_context_menu(window: tauri::Window) -> Result<(), String> {
 
     let menu = Menu::with_items(app, &[&settings, &separator, &quit])
         .map_err(|e| e.to_string())?;
+
+    // popup_menu のイベントは app.on_menu_event に届かないため
+    // window 単位でハンドラを登録する
+    let handle = app.clone();
+    window.on_menu_event(move |_win, event| {
+        crate::tray::handle_menu_event(&handle, event);
+    });
 
     window.popup_menu(&menu).map_err(|e| e.to_string())
 }
