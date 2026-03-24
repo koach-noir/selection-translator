@@ -1,7 +1,7 @@
 import { getConfig, updateConfig } from "../shared/tauri-bridge";
-import type { Config } from "../shared/types";
+import type { Config, PopupPosition } from "../shared/types";
 
-function getInput<T extends HTMLInputElement>(id: string): T {
+function getInput<T extends HTMLElement = HTMLInputElement>(id: string): T {
   return document.getElementById(id) as T;
 }
 
@@ -15,9 +15,10 @@ function populateForm(config: Config): void {
   getInput("fontColor").value = config.fontColor;
   getInput("backgroundColor").value = config.backgroundColor;
   getInput("borderRadius").value = String(config.borderRadius);
-  getInput("shadow").checked = config.shadow;
-  getInput("minLength").value = String(config.minLength);
-  getInput("englishOnly").checked = config.englishOnly;
+  getInput<HTMLInputElement>("shadow").checked = config.shadow;
+  getInput<HTMLSelectElement>("popupPosition").value = config.popupPosition;
+  getInput<HTMLInputElement>("minLength").value = String(config.minLength);
+  getInput<HTMLInputElement>("englishOnly").checked = config.englishOnly;
 }
 
 // 現在のconfigを保持し、フォームにない項目を保全する
@@ -32,9 +33,10 @@ function readForm(): Config {
     fontColor: getInput("fontColor").value,
     backgroundColor: getInput("backgroundColor").value,
     borderRadius: parseInt(getInput("borderRadius").value, 10),
-    shadow: getInput("shadow").checked,
-    minLength: parseInt(getInput("minLength").value, 10),
-    englishOnly: getInput("englishOnly").checked,
+    shadow: getInput<HTMLInputElement>("shadow").checked,
+    popupPosition: getInput<HTMLSelectElement>("popupPosition").value as PopupPosition,
+    minLength: parseInt(getInput<HTMLInputElement>("minLength").value, 10),
+    englishOnly: getInput<HTMLInputElement>("englishOnly").checked,
   };
 }
 

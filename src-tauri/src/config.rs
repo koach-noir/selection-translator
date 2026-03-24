@@ -18,6 +18,21 @@ impl Default for CopyMode {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
+pub enum PopupPosition {
+    RightQuarter,
+    RightHalf,
+    LeftQuarter,
+    LeftHalf,
+}
+
+impl Default for PopupPosition {
+    fn default() -> Self {
+        Self::RightQuarter
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Config {
     pub enabled: bool,
     pub opacity: f64,
@@ -30,6 +45,8 @@ pub struct Config {
     pub english_only: bool,
     #[serde(default)]
     pub copy_mode: CopyMode,
+    #[serde(default)]
+    pub popup_position: PopupPosition,
 }
 
 impl Default for Config {
@@ -45,6 +62,7 @@ impl Default for Config {
             min_length: 4,
             english_only: true,
             copy_mode: CopyMode::default(),
+            popup_position: PopupPosition::default(),
         }
     }
 }
